@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portal de aprovação</title>
+<style>
+/* FONTE: se você tem a licença da Neue Haas Grotesk, coloque os arquivos na pasta "fonts" e descomente:
+@font-face{font-family:"Neue Haas Grotesk";src:url("fonts/NeueHaasGrotesk-Roman.woff2") format("woff2");font-weight:400}
+@font-face{font-family:"Neue Haas Grotesk";src:url("fonts/NeueHaasGrotesk-Bold.woff2") format("woff2");font-weight:700}
+*/
+:root{--f:"Neue Haas Grotesk","Neue Haas Grotesk Text Pro","Neue Haas Grotesk Display Pro","Helvetica Neue",Helvetica,Arial,sans-serif}
+:root{--bg:#FFFFFF;--sf:#FFFFFF;--tx:#111111;--mu:#666666;--ln:#E4E4E4;--ac:#5D1C15;--acs:#F4E8E6;--am:#8A5A00;--ams:#FBEFD5;--gs:#EFEFEF;--gt:#444444;--ok:#1E6B3A;--oks:#DFF1E5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 var(--f)}
+h1,h2,h3{font-family:var(--f);margin:0;line-height:1.15}
+button{font:inherit;cursor:pointer}
+button:focus-visible,.row:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+aside{padding:24px 18px;border-right:1px solid var(--ln);background:var(--sf)}
+.brand{font:700 18px var(--f);margin-bottom:22px}
+.cli{padding:10px 12px;border:1px solid var(--ln);border-radius:10px;margin-bottom:22px}
+.cli small{color:var(--mu);display:block}
+aside nav button{display:flex;justify-content:space-between;width:100%;border:0;background:none;color:var(--tx);padding:8px 10px;border-radius:8px;text-align:left}
+aside nav button[aria-current=true]{background:var(--acs);color:var(--ac);font-weight:600}
+aside p{color:var(--mu);font-size:13px;margin:22px 10px 6px}
+main{padding:28px 32px;max-width:1000px;width:100%}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.top h1{font-size:28px}.top span{color:var(--mu)}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
+.sum div{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:14px 16px}
+.sum b{font:700 26px var(--f);display:block}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tabs button{border:1px solid var(--ln);background:var(--sf);color:var(--tx);padding:6px 14px;border-radius:99px}
+.tabs button[aria-pressed=true]{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.row{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:10px 14px 10px 10px;margin-bottom:8px;cursor:pointer}
+.row:hover{border-color:var(--ac)}
+.th{width:64px;height:64px;border-radius:9px;display:grid;place-items:center;font-size:12px;font-weight:600;color:#fff}
+.t-post{background:#5D1C15}.t-video{background:#111111}.t-texto{background:#8A4A41}.t-doc{background:#444444}
+.row h3{font-size:16px;font-family:var(--f);font-weight:600}
+.meta{color:var(--mu);font-size:13px}
+.st{font-size:13px;font-weight:600;padding:4px 11px;border-radius:99px;white-space:nowrap}
+.s-pendente{background:var(--gs);color:var(--gt)}.s-aprovado{background:var(--oks);color:var(--ok)}.s-ajustes{background:var(--ams);color:var(--am)}
+.empty{padding:40px;text-align:center;color:var(--mu);border:1px dashed var(--ln);border-radius:12px}
+#pn{position:fixed;inset:0 0 0 auto;width:min(480px,100%);background:var(--sf);border-left:1px solid var(--ln);box-shadow:-12px 0 32px rgba(0,0,0,.12);transform:translateX(105%);transition:transform .25s;overflow:auto;padding:22px;padding-top:calc(22px + env(safe-area-inset-top,0px));z-index:5}
+#pn.on{transform:none}
+.x{float:right;border:1px solid var(--ln);background:none;color:var(--tx);border-radius:8px;padding:4px 10px}
+.prev{margin:16px 0;border-radius:12px;min-height:170px;display:grid;place-items:center;color:#fff;font:700 20px var(--f);text-align:center;padding:20px}
+.copy{background:var(--bg);border-radius:10px;padding:12px 14px;white-space:pre-wrap;margin-bottom:16px}
+.lab{font-weight:600;margin:14px 0 6px}
+.log{margin:0;padding:0;list-style:none;font-size:13px;color:var(--mu)}
+.log li{padding:5px 0;border-bottom:1px solid var(--ln)}
+.act{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.b1{background:var(--ac);color:var(--bg);border:0;padding:10px 18px;border-radius:10px;font-weight:600}
+.b2{background:none;color:var(--tx);border:1px solid var(--ln);padding:10px 18px;border-radius:10px}
+input[type=text],input[type=date],select{width:100%;border:1px solid var(--ln);border-radius:10px;padding:9px 10px;background:var(--bg);color:var(--tx);font:inherit}.img{width:100%;border-radius:12px;margin:16px 0;border:1px solid var(--ln)}#adm[hidden]{display:none}aside p{margin-top:22px}textarea{width:100%;min-height:90px;border:1px solid var(--ln);border-radius:10px;padding:10px;background:var(--bg);color:var(--tx);font:inherit;margin-top:14px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
+#toast.on{opacity:1}
+@media(max-width:760px){.app{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--ln)}main{padding:20px 16px}.row{grid-template-columns:52px 1fr}.th{width:52px;height:52px}.row .st{grid-column:2;justify-self:start}}
+@media(prefers-reduced-motion:reduce){#pn,#toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+ <div class="brand">Portal de aprovação</div>
+ <div class="cli"><small>Cliente</small><b id="cli">Cliente</b></div>
+ 
+ <p>Dúvidas? Fale com a sua gestora de conteúdo.</p>
+</aside>
+<main>
+ <div class="top"><div><h1 id="ttl">Materiais para aprovação</h1><span>Revise, aprove ou peça ajustes. Tudo em um só lugar.</span></div><button class="b1" id="resumo">Enviar decisões</button></div>
+ <div class="sum" id="sum"></div>
+ <div class="tabs" id="tabs" role="group" aria-label="Filtrar por tipo"></div>
+ <div id="list"></div>
+</main>
+</div>
+<section id="pn" aria-label="Detalhe do material"></section>
+<div id="toast" role="status"></div>
+<script>
+/* ===== CONFIGURAÇÃO: edite só este bloco para cada cliente ===== */
+var CFG={
+ id:"cliente-exemplo",
+ cliente:"Cliente exemplo",
+ contato:{nome:"Paola",email:"",whatsapp:""}, /* whatsapp: só números com DDI, ex.: 5591999999999 */
+ itens:[
+  {id:"a1",tipo:"post",t:"Carrossel: 5 sinais de uma boa operação",rede:"LinkedIn",data:"15/10",ver:2,txt:"Uma boa operação não aparece só nos números. Ela aparece na rotina.\n\nNo carrossel de hoje, listamos cinco sinais que mostram quando o processo está funcionando de verdade.",anexo:""},
+  {id:"a2",tipo:"video",t:"Roteiro: bastidores da equipe",rede:"Instagram Reels",data:"17/10",ver:1,txt:"CENA 1 (0-5s): Plano aberto do time chegando.\nCENA 2 (5-20s): Depoimento curto de um colaborador.\nCENA 3 (20-45s): Rotina em ritmo acelerado e assinatura da marca.",anexo:""},
+  {id:"a3",tipo:"texto",t:"Artigo: como planejar o próximo trimestre",rede:"Blog / LinkedIn",data:"20/10",ver:1,txt:"Planejar não é prever o futuro. É deixar a equipe pronta para decidir rápido quando ele chegar.",anexo:""},
+  {id:"a4",tipo:"doc",t:"Relatório mensal de resultados",rede:"PDF para o cliente",data:"30/10",ver:1,txt:"Resumo: alcance, engajamento e melhores conteúdos do mês, com recomendações para outubro.",anexo:""}
+ ]
+};
+/* ===== fim da configuração ===== */
+var TIPOS={todos:"Todos",post:"Posts",video:"Vídeos",texto:"Textos",doc:"Documentos"};
+var LB={pendente:"Aguardando você",aprovado:"Aprovado",ajustes:"Ajustes pedidos"};
+var $=function(i){return document.getElementById(i)};
+var KEY="portal:"+CFG.id,EST={},ITENS=[],tipo="todos",aberto=null,modo="ver",MSG="";
+try{EST=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
+function salvar(){try{localStorage.setItem(KEY,JSON.stringify(EST))}catch(e){}}
+function itens(){return CFG.itens.map(function(i){var e=EST[i.id+"@"+i.ver]||{};return Object.assign({},i,{st:e.st||"pendente",com:e.com||"",log:e.log||[]})})}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function agora(){var d=new Date();return d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})+" "+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}
+function aviso(m){var t=$("toast");t.textContent=m;t.classList.add("on");setTimeout(function(){t.classList.remove("on")},2400)}
+function fechar(){$("pn").classList.remove("on");aberto=null;modo="ver"}
+function render(){
+ ITENS=itens();$("cli").textContent=CFG.cliente;document.title="Aprovação de conteúdo — "+CFG.cliente;
+ var c={pendente:0,aprovado:0,ajustes:0};ITENS.forEach(function(i){c[i.st]++});
+ $("sum").innerHTML=["pendente","ajustes","aprovado"].map(function(k){return '<div><b>'+c[k]+'</b>'+LB[k]+'</div>'}).join("");
+ $("tabs").innerHTML=Object.keys(TIPOS).map(function(k){return '<button data-t="'+k+'" aria-pressed="'+(k==tipo)+'">'+TIPOS[k]+'</button>'}).join("");
+ var l=ITENS.filter(function(i){return tipo=="todos"||i.tipo==tipo});
+ $("list").innerHTML=l.length?l.map(function(i){return '<div class="row" tabindex="0" role="button" data-id="'+esc(i.id)+'"><div class="th t-'+esc(i.tipo)+'">'+esc((TIPOS[i.tipo]||"").slice(0,-1))+'</div><div><h3>'+esc(i.t)+'</h3><div class="meta">'+esc(i.rede)+(i.data?' · publicação '+esc(i.data):'')+' · versão '+i.ver+'</div></div><span class="st s-'+i.st+'">'+LB[i.st]+'</span></div>'}).join(""):'<div class="empty">Nenhum material deste tipo por enquanto.</div>';
+}
+function texto(l){return "Olá"+(CFG.contato.nome?", "+CFG.contato.nome:"")+"! Minhas decisões no portal ("+CFG.cliente+"):\n"+l.map(function(i){return "- "+i.t+" (v"+i.ver+"): "+(i.st=="aprovado"?"APROVADO":"AJUSTES — "+i.com)}).join("\n")}
+function envios(l){
+ MSG=texto(l);var h='<div class="act">',c=CFG.contato;
+ if(c.email)h+='<a class="b2" href="mailto:'+esc(c.email)+'?subject='+encodeURIComponent("Aprovações — "+CFG.cliente)+'&body='+encodeURIComponent(MSG)+'">Avisar por e-mail</a>';
+ if(c.whatsapp)h+='<a class="b2" href="https://wa.me/'+esc(c.whatsapp)+'?text='+encodeURIComponent(MSG)+'" target="_blank" rel="noopener">Avisar por WhatsApp</a>';
+ return h+'<button class="b2" data-copy="1">Copiar mensagem</button></div>';
+}
+function abrir(id){aberto=ITENS.filter(function(i){return i.id==id})[0];if(!aberto)return;modo="ver";painel();$("pn").classList.add("on")}
+function painel(){
+ var i=aberto,h='<button class="x" id="fc">Fechar</button><span class="st s-'+i.st+'">'+LB[i.st]+'</span><h2 style="margin-top:12px">'+esc(i.t)+'</h2><div class="meta">'+esc(i.rede)+(i.data?' · publicação '+esc(i.data):'')+' · versão '+i.ver+'</div>';
+ if(i.anexo&&/\.(png|jpe?g|gif|webp|svg)(\?|$)/i.test(i.anexo))h+='<img class="img" src="'+esc(i.anexo)+'" alt="Prévia de '+esc(i.t)+'">';
+ else if(i.anexo)h+='<div class="prev t-'+i.tipo+'"><a style="color:#fff" href="'+esc(i.anexo)+'" target="_blank" rel="noopener">Abrir arquivo</a></div>';
+ else h+='<div class="prev t-'+i.tipo+'">'+esc(i.t)+'</div>';
+ h+='<div class="lab">Texto / roteiro</div><div class="copy">'+esc(i.txt)+'</div>';
+ if(i.log.length)h+='<div class="lab">Sua decisão</div><ul class="log">'+i.log.map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ul>';
+ if(modo=="aj")h+='<textarea id="cm" placeholder="Descreva o que precisa mudar" aria-label="Comentário"></textarea><div class="act"><button class="b1" id="env">Salvar ajustes</button><button class="b2" id="vol">Voltar</button></div>';
+ else if(i.st=="pendente")h+='<div class="act"><button class="b1" id="ap">Aprovar</button><button class="b2" id="aj">Pedir ajustes</button></div>';
+ else h+='<div class="lab">Avise a equipe</div>'+envios([i])+'<div class="act"><button class="b2" id="desf">Mudar decisão</button></div>';
+ $("pn").innerHTML=h;
+}
+function decidir(st,com){
+ var k=aberto.id+"@"+aberto.ver;EST[k]={st:st,com:com,log:[agora()+(st=="aprovado"?" — Aprovado":" — Ajustes pedidos: "+com)]};salvar();
+ var id=aberto.id;render();aberto=ITENS.filter(function(i){return i.id==id})[0];modo="ver";painel();aviso(st=="aprovado"?"Material aprovado":"Ajustes salvos");
+}
+document.addEventListener("click",function(e){
+ var r=e.target.closest(".row"),t=e.target.closest("[data-t]"),id=e.target.id;
+ if(r)abrir(r.dataset.id);
+ else if(t){tipo=t.dataset.t;render()}
+ else if(id=="fc")fechar();
+ else if(id=="ap")decidir("aprovado","");
+ else if(id=="aj"){modo="aj";painel()}
+ else if(id=="vol"){modo="ver";painel()}
+ else if(id=="env"){var v=$("cm").value.trim();if(!v){aviso("Escreva o ajuste antes de salvar");return}decidir("ajustes",v)}
+ else if(id=="desf"){delete EST[aberto.id+"@"+aberto.ver];salvar();var d=aberto.id;render();aberto=ITENS.filter(function(i){return i.id==d})[0];painel()}
+ else if(id=="resumo"){var l=ITENS.filter(function(i){return i.st!="pendente"});if(!l.length){aviso("Nenhuma decisão para enviar ainda");return}aberto=null;$("pn").innerHTML='<button class="x" id="fc">Fechar</button><h2>Enviar decisões</h2><p class="meta">'+l.length+' material(is) com decisão. Escolha como avisar a equipe.</p>'+envios(l);$("pn").classList.add("on")}
+ else if(e.target.dataset.copy){try{navigator.clipboard.writeText(MSG).then(function(){aviso("Mensagem copiada")},function(){aviso("Não foi possível copiar")})}catch(x){aviso("Não foi possível copiar")}}
+});
+document.addEventListener("keydown",function(e){
+ if(e.key=="Escape")fechar();
+ if((e.key=="Enter"||e.key==" ")&&e.target.classList.contains("row")){e.preventDefault();abrir(e.target.dataset.id)}
+});
+render();
+</script>
+</body>
+</html>
